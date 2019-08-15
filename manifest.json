@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "version": "0.0.1",
+  "name": "twmedia",
+  "description": "",
+  "page_action": {
+    "default_popup": "src/popup.html",
+    "show_matches": ["https://twitter.com/*"]
+  },
+  "permissions": [
+    "https://api.twitter.com/*",
+    "https://twitter.com/*",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking"
+  ]
+}
