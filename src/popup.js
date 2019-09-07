@@ -28,16 +28,14 @@ browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
           clearVideos();
           hideReloadMessage();
 
-          mediaArr.forEach(media => {
-            switch (media.type) {
-              case 'video':
-                const videoUrl = getVideoUrl(media);
-                if (videoUrl) {
-                  putVideo(videoUrl);
-                }
-                break;
-            }
-          });
+          mediaArr
+            .filter(media => media.type === 'video')
+            .forEach(media => {
+              const videoUrl = getVideoUrl(media);
+              if (videoUrl) {
+                putVideo(videoUrl);
+              }
+            });
         }
 
         filter.write(event.data);
