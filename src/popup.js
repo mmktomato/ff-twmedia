@@ -1,4 +1,4 @@
-import { getTweetId, getMediaArray, getVideoUrl } from './util.js';
+import { getTweetId, getMediaArray, getVideoUrl, asyncSleep } from './util.js';
 
 browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
   const reload = document.querySelector('#reload');
@@ -15,8 +15,14 @@ browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
       const decoder = new TextDecoder("utf-8");
       const filter = browser.webRequest.filterResponseData(details.requestId);
 
-      filter.ondata = event => {
-        const content = decoder.decode(event.data, { stream: true });
+      filter.ondata = async (event) => {
+        await asyncSleep(100);
+        const isFinal = filter.status === 'finishedtransferringdata';
+        const content = decoder.decode(event.data, { stream: !isFinal });
+        if (!isFinal) {
+          return;
+        }
+
         const mediaArr = getMediaArray(JSON.parse(content), tweetId);
         if (mediaArr) {
           clearVideos();
