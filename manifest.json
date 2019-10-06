@@ -7,6 +7,14 @@
     "default_popup": "src/popup.html",
     "show_matches": ["https://twitter.com/*"]
   },
+  "content_scripts": [{
+    "matches": ["https://twitter.com/*"],
+    "css": ["src/contentScripts.css"],
+    "js": ["dist/contentScripts.js"]
+  }],
+  "background": {
+    "scripts": ["dist/background.js"]
+  },
   "permissions": [
     "https://api.twitter.com/*",
     "https://twitter.com/*",
