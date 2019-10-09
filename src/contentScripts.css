@@ -1,1 +1,10 @@
-/* aaa */
+.ff-tw-media {
+  height: 49px;
+  display: flex;
+  align-items: center;
+  border-top: solid 1px rgb(230, 236, 240);
+}
+
+.ff-tw-media > a > img {
+  height : 20px;
+}

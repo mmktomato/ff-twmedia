@@ -1,6 +1,5 @@
-// TODO: consider to move to utils.
 const findTweet = (baseEl) => {
-  const parent = base.parentElement;
+  const parent = baseEl.parentElement;
   const tag = parent.tagName.toLowerCase();
   if (tag === 'article') {
     return parent;
@@ -10,21 +9,37 @@ const findTweet = (baseEl) => {
   return findTweet(parent);
 };
 
-// TODO: consider to move to utils.
 const insertLink = (tweetEl, url) => {
+  const img = document.createElement('img');
+  img.src = browser.runtime.getURL('./image/video.svg');
+  img.alt = 'video';
+
   const a = document.createElement('a');
   a.href = url;
-  a.append(document.createTextNode(url))
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.append(img);
 
-  const lastEl = tweetEl.lastElementChild;
-  tweetEl.insertBefore(a, lastEl);
+  const div = document.createElement('div');
+  div.classList.add('ff-tw-media');
+  div.append(a);
+
+  const parent = tweetEl.children[0];
+  parent.insertBefore(div, parent.lastElementChild);
 };
 
-// const register = () => {
-//   const tweetId = getTweetId(location.href);
-//   console.log(tweetId);
-// 
-//   if (tweetId) {
-//     browser.runtime.sendMessage({ type: "register", tweetId });
-//   }
-// };
+browser.runtime.onMessage.addListener(message => {
+  switch (message.type) {
+    case "url":
+      console.log(message.url);
+
+      const baseEl = document.querySelector(`a[href="${location.pathname}/likes"]`)
+      if (baseEl) {
+        const tweetEl = findTweet(baseEl);
+        if (tweetEl) {
+          insertLink(tweetEl, message.url);
+        }
+      }
+      break;
+  }
+});

@@ -7,7 +7,7 @@ import { getTweetId, getMediaArray, getVideoUrl, asyncSleep } from './util.js';
 // }
 const listeners = {};
 
-const createListener = (tweetId) => {
+const createListener = (tabId, tweetId) => {
   return (details) => {
     // console.log(details.url);
     if (details.url.startsWith(`https://api.twitter.com/2/timeline/conversation/${tweetId}.json`)) {
@@ -15,7 +15,9 @@ const createListener = (tweetId) => {
       const filter = browser.webRequest.filterResponseData(details.requestId);
 
       filter.ondata = async (event) => {
-        await asyncSleep(300);
+        filter.write(event.data);
+
+        await asyncSleep(100);
         const isFinal = filter.status === 'finishedtransferringdata';
         const content = decoder.decode(event.data, { stream: !isFinal });
         if (!isFinal) {
@@ -30,15 +32,13 @@ const createListener = (tweetId) => {
               .forEach(media => {
                 const videoUrl = getVideoUrl(media);
                 if (videoUrl) {
-                  // TODO: send to content script
-                  console.log(videoUrl);
+                  sendToContent(tabId, videoUrl);
                 }
               });
           }
         } catch (e) {
           console.log(e);
         } finally {
-          filter.write(event.data);
           filter.disconnect();
 
           // TODO: Should I call `removeListener`?
@@ -67,13 +67,9 @@ const removeListener = (windowId, tabId) => {
   }
 };
 
-// browser.runtime.onMessage.addListener(message => {
-//   switch (message.type) {
-//     case "register":
-//       addListener(createListener(message.tweetId));
-//       break;
-//   }
-// });
+const sendToContent = (tabId, url) => {
+  browser.tabs.sendMessage(tabId, { type: "url", url });
+}
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // console.log(`${tabId} / ${changeInfo.url} / ${tab.url}`);
@@ -82,7 +78,7 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     const tweetId = getTweetId(changeInfo.url);
     if (tweetId) {
-      const listener = createListener(tweetId);
+      const listener = createListener(tabId, tweetId);
       addListener(listener, tab.windowId, tabId);
     }
   }
