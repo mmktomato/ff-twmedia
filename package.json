@@ -1,14 +1,19 @@
 {
-  "name": "ff-twmedia-tmp",
+  "name": "twmedia",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "web-ext run",
-    "bundle-dev": "parcel watch src/contentScripts.js src/background.js"
+    "bundle-dev": "parcel watch src/content.js src/background.js",
+    "clean": "rm -rf dist"
   },
-  "author": "",
+  "author": "mmktomato",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmktomato/ff-twmedia"
+  },
   "devDependencies": {
     "parcel-bundler": "^1.12.3",
     "web-ext": "^3.1.1"

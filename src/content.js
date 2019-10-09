@@ -21,7 +21,7 @@ const insertLink = (tweetEl, url) => {
   a.append(img);
 
   const div = document.createElement('div');
-  div.classList.add('ff-tw-media');
+  div.classList.add('ff-twmedia');
   div.append(a);
 
   const parent = tweetEl.children[0];
