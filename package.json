@@ -6,6 +6,7 @@
   "scripts": {
     "start": "web-ext run",
     "bundle-dev": "parcel watch src/content.js src/background.js",
+    "bundle": "npm run clean && parcel build --no-source-maps src/content.js src/background.js",
     "clean": "rm -rf dist"
   },
   "author": "mmktomato",
