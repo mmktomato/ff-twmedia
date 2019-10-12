@@ -1,0 +1,13 @@
+.list {
+  height: 50px;
+  margin: 0;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  border-top: solid 1px rgb(230, 236, 240);
+  list-style: none;
+
+  & img {
+    height : 20px;
+  }
+}

@@ -1,3 +1,5 @@
+import styles from './content.scss';
+
 const findTweet = (baseEl) => {
   const parent = baseEl.parentElement;
   const tag = parent.tagName.toLowerCase();
@@ -20,12 +22,15 @@ const insertLink = (tweetEl, url) => {
   a.rel = "noopener noreferrer";
   a.append(img);
 
-  const div = document.createElement('div');
-  div.classList.add('ff-twmedia');
-  div.append(a);
+  const li = document.createElement('li');
+  li.append(a);
+
+  const ul = document.createElement('ul');
+  ul.classList.add(styles.list);
+  ul.append(li);
 
   const parent = tweetEl.children[0];
-  parent.insertBefore(div, parent.lastElementChild);
+  parent.insertBefore(ul, parent.lastElementChild);
 };
 
 browser.runtime.onMessage.addListener(message => {
