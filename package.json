@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "web-ext run",
-    "bundle-dev": "parcel watch src/content.js src/background.js",
+    "bundle-dev": "parcel watch src/content.js src/background.js --public-url=/dist",
     "bundle": "npm run clean && parcel build --no-source-maps src/content.js src/background.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist .cache"
   },
   "author": "mmktomato",
   "license": "MIT",
