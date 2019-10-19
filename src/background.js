@@ -13,18 +13,23 @@ const createListener = (tabId, tweetId) => {
     if (details.url.startsWith(`https://api.twitter.com/2/timeline/conversation/${tweetId}.json`)) {
       const decoder = new TextDecoder("utf-8");
       const filter = browser.webRequest.filterResponseData(details.requestId);
+      const data = [];
 
-      filter.ondata = async (event) => {
+      filter.ondata = (event) => {
+        data.push(event.data);
         filter.write(event.data);
+      };
 
-        await asyncSleep(100);
-        const isFinal = filter.status === 'finishedtransferringdata';
-        const content = decoder.decode(event.data, { stream: !isFinal });
-        if (!isFinal) {
-          return;
-        }
+      filter.onstop = (event) => {
+        filter.close();
 
         try {
+          let content = undefined;
+          data.forEach((d, i) => {
+            const isFinal = i === data.length - 1;
+            content = decoder.decode(d, { stream: !isFinal });
+          });
+
           const mediaArr = getMediaArray(JSON.parse(content), tweetId);
           if (mediaArr) {
             mediaArr
@@ -39,8 +44,6 @@ const createListener = (tabId, tweetId) => {
         } catch (e) {
           console.log(e);
         } finally {
-          filter.disconnect();
-
           // TODO: Should I call `removeListener`?
         }
       };
