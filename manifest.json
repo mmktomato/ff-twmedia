@@ -4,6 +4,7 @@
   "name": "twmedia",
   "description": "",
   "content_scripts": [{
+    "run_at": "document_start",
     "matches": ["https://twitter.com/*"],
     "css": ["dist/content.css"],
     "js": ["dist/content.js"]
