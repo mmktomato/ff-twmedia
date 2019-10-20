@@ -1,4 +1,4 @@
-import { getTweetId, getMediaArray, getVideoUrl, asyncSleep } from './util.js';
+import { getTweetId, getMediaArray, getVideoUrl } from './util.js';
 
 // {
 //   windowId: {

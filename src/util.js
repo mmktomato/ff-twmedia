@@ -27,9 +27,3 @@ export const getVideoUrl = (media) => {
 
   return largest.url;
 };
-
-export const asyncSleep = (ms) => {
-  return new Promise((resolve, _) => {
-    setTimeout(() => resolve(), ms);
-  });
-};
