@@ -35,7 +35,7 @@ const insertLink = (tweetEl, url) => {
 
 browser.runtime.onMessage.addListener(message => {
   switch (message.type) {
-    case "url":
+    case "ff-twmedia_url":
       console.log(message.url);
 
       const baseEl = document.querySelector(`a[href="${location.pathname}/likes"]`)

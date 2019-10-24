@@ -71,7 +71,7 @@ const removeListener = (windowId, tabId) => {
 };
 
 const sendToContent = (tabId, url) => {
-  browser.tabs.sendMessage(tabId, { type: "url", url });
+  browser.tabs.sendMessage(tabId, { type: "ff-twmedia_url", url });
 }
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
