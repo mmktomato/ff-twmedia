@@ -1,5 +1,7 @@
 import styles from './content.scss';
 
+const photoLinkPrefix = "https://pbs.twimg.com/media/";
+
 const findTweet = (baseEl) => {
   const parent = baseEl.parentElement;
   const tag = parent.tagName.toLowerCase();
@@ -9,6 +11,19 @@ const findTweet = (baseEl) => {
     return undefined;
   }
   return findTweet(parent);
+};
+
+const findPhotoOverlay = () => {
+  const closeButton = document.querySelector('div[aria-label="Close"]');
+  return closeButton && closeButton.parentNode.parentNode;
+};
+
+const isPhotoNode = (node) => {
+  return node.tagName.toLowerCase() === "img" && node.src.startsWith(photoLinkPrefix);
+};
+
+const replaceToOriginalPhoto = (url) => {
+  return url.replace(/name=[^&]+/, "name=orig");
 };
 
 const insertLink = (tweetEl, url) => {
@@ -44,6 +59,28 @@ browser.runtime.onMessage.addListener(message => {
         if (tweetEl) {
           insertLink(tweetEl, message.url);
         }
+      }
+      break;
+
+    case "ff-twmedia_photo":
+      const images = document.querySelectorAll(`img[src^="${photoLinkPrefix}"]`);
+      if (images && 0 < images.length) {
+        Array.from(images).forEach(image => {
+          image.src = replaceToOriginalPhoto(image.src);
+        });
+      } else {
+        const observer = new MutationObserver((mutations, _observer) => {
+          mutations.forEach(mutation => {
+            Array.from(mutation.addedNodes).forEach(addedNode => {
+              if (isPhotoNode(addedNode)) {
+                addedNode.src = replaceToOriginalPhoto(addedNode.src);
+                _observer.disconnect();
+              }
+            });
+          });
+        });
+        const target = findPhotoOverlay() || document.querySelector('body');
+        observer.observe(target, { childList: true, subtree: true });
       }
       break;
   }

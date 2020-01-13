@@ -1,4 +1,4 @@
-import { getTweetId, getMediaArray, getVideoUrl } from './util.js';
+import { getTweetId, isPhotoTweet, getMediaArray, getVideoUrl } from './util.js';
 
 // {
 //   windowId: {
@@ -37,12 +37,12 @@ const createListener = (tabId, tweetId) => {
               .forEach(media => {
                 const videoUrl = getVideoUrl(media);
                 if (videoUrl) {
-                  sendToContent(tabId, videoUrl);
+                  sendUrlToContent(tabId, videoUrl);
                 }
               });
           }
         } catch (e) {
-          console.log(e);
+          console.error(e);
         } finally {
           // TODO: Should I call `removeListener`?
         }
@@ -70,14 +70,23 @@ const removeListener = (windowId, tabId) => {
   }
 };
 
-const sendToContent = (tabId, url) => {
+const sendUrlToContent = (tabId, url) => {
   browser.tabs.sendMessage(tabId, { type: "ff-twmedia_url", url });
+}
+
+const sendPhotoModeToContent = (tabId) => {
+  browser.tabs.sendMessage(tabId, { type: "ff-twmedia_photo" });
 }
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // console.log(`${tabId} / ${changeInfo.url} / ${tab.url}`);
   if (changeInfo.url) {
     removeListener(tab.windowId, tabId);
+
+    if (isPhotoTweet(changeInfo.url)) {
+      sendPhotoModeToContent(tabId);
+      return;
+    }
 
     const tweetId = getTweetId(changeInfo.url);
     if (tweetId) {

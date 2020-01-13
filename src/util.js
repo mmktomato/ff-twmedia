@@ -1,9 +1,16 @@
-const tweetPattern = new RegExp('https://twitter\.com/.+/status\/(.+)');
+const tweetDetailPattern = new RegExp('https://twitter\.com/.+/status\/(.+)');
+const photoTweetPattern = new RegExp('https://twitter\.com/.+/status\/.+/photo/[1-4]');
 
 export const getTweetId = (url) => {
-  const m = url.match(tweetPattern);
+  const m = url.match(tweetDetailPattern);
 
   return m && m.length === 2 && m[1];
+};
+
+export const isPhotoTweet = (url) => {
+  const m = url.match(photoTweetPattern);
+
+  return !!m;
 };
 
 export const getMediaArray = (content, tweetId) => {
