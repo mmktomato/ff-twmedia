@@ -23,5 +23,8 @@
   },
   "browserslist": [
     "last 2 Chrome versions"
-  ]
+  ],
+  "engines": {
+    "node": ">=12.x"
+  }
 }
