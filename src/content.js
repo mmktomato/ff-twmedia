@@ -26,10 +26,18 @@ const replaceToOriginalPhoto = (url) => {
   return url.replace(/name=[^&]+/, "name=orig");
 };
 
+const isDarkTheme = () => {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  return meta && (meta.content === '#15202B' || meta.content === '#000000');
+};
+
 const insertLink = (tweetEl, url) => {
   const img = document.createElement('img');
   img.src = browser.runtime.getURL('./image/video.svg');
   img.alt = 'video';
+  if (isDarkTheme()) {
+    img.classList.add(styles.invert);
+  }
 
   const a = document.createElement('a');
   a.href = url;
@@ -49,39 +57,43 @@ const insertLink = (tweetEl, url) => {
 };
 
 browser.runtime.onMessage.addListener(message => {
-  switch (message.type) {
-    case "ff-twmedia_url":
-      console.log(message.url);
+  try {
+    switch (message.type) {
+      case "ff-twmedia_url":
+        console.log(message.url);
 
-      const baseEl = document.querySelector(`a[href="${location.pathname}/likes"]`)
-      if (baseEl) {
-        const tweetEl = findTweet(baseEl);
-        if (tweetEl) {
-          insertLink(tweetEl, message.url);
+        const baseEl = document.querySelector(`a[href="${location.pathname}/likes"]`)
+        if (baseEl) {
+          const tweetEl = findTweet(baseEl);
+          if (tweetEl) {
+            insertLink(tweetEl, message.url);
+          }
         }
-      }
-      break;
+        break;
 
-    case "ff-twmedia_photo":
-      const images = document.querySelectorAll(`img[src^="${photoLinkPrefix}"]`);
-      if (images && 0 < images.length) {
-        Array.from(images).forEach(image => {
-          image.src = replaceToOriginalPhoto(image.src);
-        });
-      } else {
-        const observer = new MutationObserver((mutations, _observer) => {
-          mutations.forEach(mutation => {
-            Array.from(mutation.addedNodes).forEach(addedNode => {
-              if (isPhotoNode(addedNode)) {
-                addedNode.src = replaceToOriginalPhoto(addedNode.src);
-                _observer.disconnect();
-              }
+      case "ff-twmedia_photo":
+        const images = document.querySelectorAll(`img[src^="${photoLinkPrefix}"]`);
+        if (images && 0 < images.length) {
+          Array.from(images).forEach(image => {
+            image.src = replaceToOriginalPhoto(image.src);
+          });
+        } else {
+          const observer = new MutationObserver((mutations, _observer) => {
+            mutations.forEach(mutation => {
+              Array.from(mutation.addedNodes).forEach(addedNode => {
+                if (isPhotoNode(addedNode)) {
+                  addedNode.src = replaceToOriginalPhoto(addedNode.src);
+                  _observer.disconnect();
+                }
+              });
             });
           });
-        });
-        const target = findPhotoOverlay() || document.querySelector('body');
-        observer.observe(target, { childList: true, subtree: true });
-      }
-      break;
+          const target = findPhotoOverlay() || document.querySelector('body');
+          observer.observe(target, { childList: true, subtree: true });
+        }
+        break;
+    }
+  } catch (e) {
+    console.error(e);
   }
 });
